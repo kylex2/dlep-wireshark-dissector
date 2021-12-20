@@ -6,29 +6,25 @@ Wireshark dissector plugin for the Dynamic Link Exchange Protocol ([DLEP][dlep])
 Installation
 ------------
 
-The following instructions are tailored and tested for Ubuntu 16.04 64-bit Desktop and Wireshark 2.6.8:
+The following instructions are tailored and tested for Ubuntu 20.04 64-bit Desktop and Wireshark 3.2.3:
 
-* Install wireshark, install wireshark dependencies, download wireshark source code, and extract the DLEP plugin:
+* Install wireshark together with dependencies and wireshark-dev package:
 
-      ```bash
-      cd ~/Downloads
-      sudo apt-get install wireshark
-      sudo apt-get build-dep wireshark
-      apt-get source wireshark
-      tar -zxf /path/to/dissector/tarball/dlep-wireshark-dissector-1.0.0.tgz -C ~/Downloads/wireshark-2.6.8/plugins/epan/dlep --strip-components=1
-      ```
+```sh
+sudo apt install wireshark wireshark-dev
+```
 
-* Make and install the plugin:
+* Checkout plugin source, build and install:
 
-      ```bash
-      cd ~/Downloads/wireshark-2.6.8
-      mkdir build
-      cd build
-      cmake -DCUSTOM_PLUGIN_SRC_DIR="plugins/epan/dlep" ../
-      make -j8 -C plugins/epan/dlep
-      mkdir -p ~/.local/lib/wireshark/plugins/2.6/epan
-      cp run/plugins/2.6/epan/dlep.so ~/.local/lib/wireshark/plugins/2.6/epan/
-      ```
+```sh
+git clone git@github.com:kylex2/dlep-wireshark-dissector.git
+cd dlep-wireshark-dissector/
+mkdir build && cd build
+cmake ..
+make
+mkdir -p ~/.local/lib/wireshark/plugins/3.2/epan
+cp dlep.so ~/.local/lib/wireshark/plugins/3.2/epan/
+```
 
 Usage
 -----
