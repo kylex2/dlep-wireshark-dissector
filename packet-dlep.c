@@ -34,13 +34,28 @@
 #include <epan/prefs.h>
 #include <epan/tvbuff.h>
 #include <epan/to_str.h>
+#include <ws_attributes.h>
 #include <glib.h>
+
+#ifndef VERSION
+#define VERSION "1.0.0"
+#endif
+
+#define DLL_PUBLIC __attribute__((__visibility__("default")))
+
+WS_DLL_PUBLIC_DEF const gchar plugin_version[] = VERSION;
+#ifdef VERSION_RELEASE
+WS_DLL_PUBLIC_DEF const gchar plugin_release[] = VERSION_RELEASE;
+#else
+WS_DLL_PUBLIC_DEF const int plugin_want_major = VERSION_MAJOR;
+WS_DLL_PUBLIC_DEF const int plugin_want_minor = VERSION_MINOR;
+#endif
+
+WS_DLL_PUBLIC_DEF void plugin_register(void);
+void proto_reg_handoff_dlep(void);
 
 static guint global_dlep_udp_port = DLEP_UDP_PORT;
 static guint global_dlep_tcp_port = DLEP_TCP_PORT;
-
-void proto_register_dlep(void);
-void proto_reg_handoff_dlep(void);
 
 static gint proto_dlep = -1;
 
@@ -1064,4 +1079,14 @@ proto_reg_handoff_dlep(void)
 
   dissector_add_uint("udp.port", dlep_udp_port, dlep_sig_handle);
   dissector_add_uint("tcp.port", dlep_tcp_port, dlep_msg_handle);
+}
+
+void
+plugin_register(void)
+{
+    static proto_plugin plugin_dlep;
+
+    plugin_dlep.register_protoinfo = proto_register_dlep;
+    plugin_dlep.register_handoff = proto_reg_handoff_dlep; // or NULL
+    proto_register_plugin(&plugin_dlep);
 }
